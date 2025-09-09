@@ -5,7 +5,7 @@ import qs.services
 import qs.config
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
@@ -13,7 +13,7 @@ Item {
     id: root
 
     required property ShellScreen screen
-    required property HyprlandToplevel client
+    required property Toplevel client
 
     Layout.preferredWidth: preview.implicitWidth + Appearance.padding.large * 2
     Layout.fillHeight: true

@@ -7,7 +7,7 @@ import qs.modules.windowinfo
 import qs.modules.controlcenter
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 
 Item {
@@ -56,10 +56,13 @@ Item {
 
     Keys.onEscapePressed: close()
 
-    HyprlandFocusGrab {
-        active: root.isDetached
-        windows: [QsWindow.window]
-        onCleared: root.close()
+    // Focus management for niri - simplified approach
+    // TODO: Implement proper focus handling for niri
+    MouseArea {
+        anchors.fill: parent
+        enabled: root.isDetached
+        onClicked: root.close()
+        z: -1
     }
 
     Binding {
@@ -90,7 +93,7 @@ Item {
 
         sourceComponent: WindowInfo {
             screen: root.screen
-            client: Hypr.activeToplevel
+            client: ToplevelManager.toplevels.values.find(t => t.activated) || null
         }
     }
 

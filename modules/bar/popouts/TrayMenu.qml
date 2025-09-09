@@ -5,7 +5,7 @@ import qs.services
 import qs.config
 import Quickshell
 import Quickshell.Widgets
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Controls
 
@@ -27,10 +27,12 @@ StackView {
     popEnter: NoAnim {}
     popExit: NoAnim {}
 
-    HyprlandFocusGrab {
-        active: true
-        windows: [QsWindow.window]
-        onCleared: root.popouts.hasCurrent = false
+    // Focus management for niri - simplified approach
+    // TODO: Implement proper focus handling for niri
+    MouseArea {
+        anchors.fill: parent
+        onClicked: root.popouts.hasCurrent = false
+        z: -1
     }
 
     component NoAnim: Transition {

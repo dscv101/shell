@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/0840f496-575c-4ca6-83a8-87bb01a85c5f
 ## Components
 
 -   Widgets: [`Quickshell`](https://quickshell.outfoxxed.me)
--   Window manager: [`Hyprland`](https://hyprland.org)
+-   Window manager: [`niri`](https://github.com/YaLTeR/niri)
 -   Dots: [`caelestia`](https://github.com/caelestia-dots)
 
 ## Installation
@@ -133,14 +133,13 @@ sudo cmake --install build
 
 The shell can be started via the `caelestia shell -d` command or `qs -c caelestia`.
 If the entire caelestia dots are installed, the shell will be autostarted on login
-via an `exec-once` in the hyprland config.
+via niri's `spawn-at-startup` configuration.
 
 ### Shortcuts/IPC
 
-All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hyprland.org/Configuring/Binds/#dbus-global-shortcuts).
+Keybinds need to be configured in niri's configuration file.
 If using the entire caelestia dots, the keybinds are already configured for you.
-Otherwise, [this file](https://github.com/caelestia-dots/caelestia/blob/main/hypr/hyprland/keybinds.conf#L1-L39)
-contains an example on how to use global shortcuts.
+Otherwise, you'll need to configure niri keybinds to call the shell's IPC commands.
 
 All IPC commands can be accessed via `caelestia shell ...`. For example
 
@@ -456,17 +455,11 @@ The module automatically adds Caelestia shell to the path with **full functional
 
 ### My screen is flickering, help pls!
 
-Try disabling VRR in the hyprland config. You can do this by adding the following to `~/.config/caelestia/hypr-user.conf`:
+Try adjusting niri's rendering settings in your niri configuration file. You can disable VRR or adjust other display settings as needed.
 
-```conf
-misc {
-    vrr = 0
-}
-```
+### I want to make my own changes to the niri config!
 
-### I want to make my own changes to the hyprland config!
-
-You can add your custom hyprland configs to `~/.config/caelestia/hypr-user.conf`.
+You can customize niri's configuration in your niri config file (typically `~/.config/niri/config.kdl`).
 
 ### I want to make my own changes to other stuff!
 
@@ -496,7 +489,7 @@ the launcher only shows an odd number of wallpapers at one time. If you only hav
 
 ## Credits
 
-Thanks to the Hyprland discord community (especially the homies in #rice-discussion) for all the help and suggestions
+Thanks to the niri and Wayland communities for all the help and suggestions
 for improving these dots!
 
 A special thanks to [@outfoxxed](https://github.com/outfoxxed) for making Quickshell and the effort put into fixing issues
