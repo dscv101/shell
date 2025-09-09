@@ -1,113 +1,43 @@
 pragma Singleton
 
-import qs.components.misc
-import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Io
+// Compatibility layer that redirects Hypr calls to NiriService
+// This allows existing code to continue working without major changes
+
+import qs.services
 import QtQuick
 
 Singleton {
     id: root
 
-    readonly property var toplevels: Hyprland.toplevels
-    readonly property var workspaces: Hyprland.workspaces
-    readonly property var monitors: Hyprland.monitors
+    // Redirect all properties to NiriService
+    readonly property var toplevels: NiriService.toplevels
+    readonly property var workspaces: NiriService.workspaces
+    readonly property var monitors: NiriService.monitors
+    readonly property int activeWsId: NiriService.activeWsId
+    readonly property var focusedWorkspace: NiriService.allWorkspaces.find(w => w.is_focused) || null
+    readonly property var focusedMonitor: NiriService.outputs[NiriService.currentOutput] || null
 
-    readonly property HyprlandToplevel activeToplevel: Hyprland.activeToplevel?.wayland?.activated ? Hyprland.activeToplevel : null
-    readonly property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
-    readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
-    readonly property int activeWsId: focusedWorkspace?.id ?? 1
+    property var keyboard: NiriService.keyboard
+    readonly property bool capsLock: NiriService.capsLock
+    readonly property bool numLock: NiriService.numLock
+    readonly property string defaultKbLayout: NiriService.defaultKbLayout
+    readonly property string kbLayoutFull: NiriService.kbLayoutFull
+    readonly property string kbLayout: NiriService.kbLayout
 
-    property var keyboard
-    readonly property bool capsLock: keyboard?.capsLock ?? false
-    readonly property bool numLock: keyboard?.numLock ?? false
-    readonly property string defaultKbLayout: keyboard?.layout.split(",")[0] ?? "??"
-    readonly property string kbLayoutFull: keyboard?.active_keymap ?? "Unknown"
-    readonly property string kbLayout: kbMap.get(kbLayoutFull) ?? "??"
-    readonly property var kbMap: new Map()
-
-    function dispatch(request: string): void {
-        Hyprland.dispatch(request);
+    // Redirect functions to NiriService
+    function dispatch(request) {
+        return NiriService.dispatch(request)
     }
 
-    function monitorFor(screen: ShellScreen): HyprlandMonitor {
-        return Hyprland.monitorFor(screen);
+    function monitorFor(screen) {
+        return NiriService.monitorFor(screen)
     }
 
+    // Connect to NiriService signals
     Connections {
-        target: Hyprland
-
-        function onRawEvent(event: HyprlandEvent): void {
-            const n = event.name;
-            if (n.endsWith("v2"))
-                return;
-
-            if (n === "configreloaded") {
-                setDynamicConfsProc.running = true;
-            } else if (n === "activelayout") {
-                devicesProc.running = true;
-            } else if (["workspace", "moveworkspace", "activespecial", "focusedmon"].includes(n)) {
-                Hyprland.refreshWorkspaces();
-                Hyprland.refreshMonitors();
-            } else if (["openwindow", "closewindow", "movewindow"].includes(n)) {
-                Hyprland.refreshToplevels();
-                Hyprland.refreshWorkspaces();
-            } else if (n.includes("mon")) {
-                Hyprland.refreshMonitors();
-            } else if (n.includes("workspace")) {
-                Hyprland.refreshWorkspaces();
-            } else if (n.includes("window") || n.includes("group") || ["pin", "fullscreen", "changefloatingmode", "minimize"].includes(n)) {
-                Hyprland.refreshToplevels();
-            }
+        target: NiriService
+        function onWorkspacesChanged() {
+            // Emit compatibility signals if needed
         }
-    }
-
-    FileView {
-        id: kbLayoutFile
-
-        path: Quickshell.env("CAELESTIA_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
-        onLoaded: {
-            const lines = text().match(/! layout\n([\s\S]*?)\n\n/)[1].split("\n");
-            for (const line of lines) {
-                if (!line.trim() || line.trim().startsWith("!"))
-                    continue;
-
-                const match = line.match(/^\s*([a-z]{2,})\s+([a-zA-Z() ]+)$/);
-                if (match)
-                    root.kbMap.set(match[2], match[1]);
-            }
-        }
-    }
-
-    Process {
-        id: devicesProc
-
-        running: true
-        command: ["hyprctl", "-j", "devices"]
-        stdout: StdioCollector {
-            onStreamFinished: root.keyboard = JSON.parse(text).keyboards.find(k => k.main)
-        }
-    }
-
-    Process {
-        id: setDynamicConfsProc
-
-        running: true
-        command: ["hyprctl", "--batch", "keyword bindln ,Caps_Lock,global,caelestia:reloadDevices;keyword bindln ,Num_Lock,global,caelestia:reloadDevices"]
-    }
-
-    IpcHandler {
-        target: "hypr"
-
-        function reloadDevices(): void {
-            devicesProc.running = true;
-        }
-    }
-
-    CustomShortcut {
-        name: "reloadDevices"
-        description: "Reload devices"
-        onPressed: devicesProc.running = true
-        onReleased: devicesProc.running = true
     }
 }

@@ -2,7 +2,7 @@ import qs.components
 import qs.services
 import qs.config
 import Quickshell
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
@@ -10,7 +10,7 @@ Item {
     id: root
 
     required property ShellScreen screen
-    required property HyprlandToplevel client
+    required property Toplevel client
 
     implicitWidth: child.implicitWidth
     implicitHeight: screen.height * Config.winfo.sizes.heightMult

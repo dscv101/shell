@@ -7,7 +7,7 @@ import qs.config
 import qs.modules.bar
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
 
@@ -63,13 +63,16 @@ Variants {
                 }
             }
 
-            HyprlandFocusGrab {
-                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled)
-                windows: [win]
-                onCleared: {
+            // Focus management for niri - simplified approach
+            // TODO: Implement proper focus handling for niri
+            MouseArea {
+                anchors.fill: parent
+                enabled: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled)
+                onClicked: {
                     visibilities.launcher = false;
                     visibilities.session = false;
                 }
+                z: -1
             }
 
             StyledRect {

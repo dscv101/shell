@@ -1,14 +1,14 @@
 import qs.components
 import qs.services
 import qs.config
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
 ColumnLayout {
     id: root
 
-    required property HyprlandToplevel client
+    required property Toplevel client
 
     anchors.fill: parent
     spacing: Appearance.spacing.small

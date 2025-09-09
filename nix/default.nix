@@ -14,7 +14,7 @@
   wl-clipboard,
   libqalculate,
   bash,
-  hyprland,
+  niri,
   material-symbols,
   rubik,
   nerd-fonts,
@@ -47,7 +47,7 @@
       wl-clipboard
       libqalculate
       bash
-      hyprland
+      niri
     ]
     ++ extraRuntimeDeps
     ++ lib.optional withCli caelestia-cli;

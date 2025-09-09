@@ -6,7 +6,7 @@ import qs.config
 import qs.utils
 import Caelestia
 import Quickshell
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 
 Item {
@@ -67,10 +67,13 @@ Item {
         }
     ]
 
-    HyprlandFocusGrab {
-        active: !Config.dashboard.showOnHover && root.visibilities.dashboard && Config.dashboard.enabled
-        windows: [QsWindow.window]
-        onCleared: root.visibilities.dashboard = false
+    // Focus management for niri - simplified approach
+    // TODO: Implement proper focus handling for niri
+    MouseArea {
+        anchors.fill: parent
+        enabled: !Config.dashboard.showOnHover && root.visibilities.dashboard && Config.dashboard.enabled
+        onClicked: root.visibilities.dashboard = false
+        z: -1
     }
 
     Loader {
